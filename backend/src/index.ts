@@ -6,6 +6,7 @@ import authMessages from "./routes/message.rout.js";
 import { Types } from "mongoose";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { app, server } from "./lib/socket";
 declare global {
   namespace Express {
     interface Request {
@@ -22,7 +23,6 @@ declare global {
 }
 dotenv.config();
 
-const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/auth", authRoute);
 app.use("/api/messages", authMessages);
-app.listen(process.env.PORT, () => {
+server.listen(process.env.PORT, () => {
   console.log("server start at port", process.env.PORT);
   connectDb();
 });
