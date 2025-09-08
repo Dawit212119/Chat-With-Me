@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { User } from "../models/user.model";
 import { Messages } from "../models/messages.model";
 import cloudinary from "../lib/cloudinary";
+import { io, resolveUserSocketId } from "../lib/socket";
 
 export const getUsers = async (req: Request, res: Response) => {
   const currentUser = req.user._id;
@@ -48,5 +49,10 @@ export const sendMessages = async (req: Request, res: Response) => {
   });
   await sendMessage.save();
   //  todo : realtime functionality
+  const receiversocketId = resolveUserSocketId(sendTo);
+  if (receiversocketId) {
+    io.to(receiversocketId).emit("newMessage", sendMessage);
+  }
+
   res.status(201).json(sendMessage);
 };
